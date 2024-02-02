@@ -25,7 +25,7 @@ int main(int argc, char* argv[]) {
     }
 
     // Set the draw color to blue (0, 0, 255, 255)
-    SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
 
     // Create a rectangle for the player
     SDL_Rect playerRect = {400, 300, 50, 50};
