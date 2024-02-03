@@ -1,81 +1,74 @@
 #include <SDL.h>
+#include <SDL_image.h>
+#include <iostream>
 
 int main(int argc, char* argv[]) {
     // Initialize SDL
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
-        return -1;
+    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+        std::cerr << "SDL_Init Error: " << SDL_GetError() << std::endl;
+        return 1;
     }
 
-    // Create a window
-    SDL_Window* window = SDL_CreateWindow("Simple Game", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 600, SDL_WINDOW_SHOWN);
-    if (!window) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Window could not be created! SDL_Error: %s\n", SDL_GetError());
+    // Initialize SDL_image
+    if ((IMG_Init(IMG_INIT_JPG) & IMG_INIT_JPG) != IMG_INIT_JPG) {
+        std::cerr << "IMG_Init Error: " << IMG_GetError() << std::endl;
         SDL_Quit();
-        return -1;
+        return 1;
     }
 
-    // Create a renderer
+    // Create a window and renderer
+    SDL_Window* window = SDL_CreateWindow("Image Display", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, 0);
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    if (!renderer) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
+
+    // Load images
+    SDL_Surface* imgBikiniBottom = IMG_Load("bikinibottom.jpg");
+    SDL_Surface* imgSpongebob = IMG_Load("spongebob.png");
+
+    if (!imgBikiniBottom || !imgSpongebob) {
+        std::cerr << "IMG_Load Error: " << IMG_GetError() << std::endl;
+        SDL_DestroyRenderer(renderer);
         SDL_DestroyWindow(window);
+        IMG_Quit();
         SDL_Quit();
-        return -1;
+        return 1;
     }
 
-    // Set the draw color to blue (0, 0, 255, 255)
-    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+    // Create textures from surfaces
+    SDL_Texture* texBikiniBottom = SDL_CreateTextureFromSurface(renderer, imgBikiniBottom);
+    SDL_Texture* texSpongebob = SDL_CreateTextureFromSurface(renderer, imgSpongebob);
 
-    // Create a rectangle for the player
-    SDL_Rect playerRect = {400, 300, 50, 50};
+    // Free surfaces as they are no longer needed
+    SDL_FreeSurface(imgBikiniBottom);
+    SDL_FreeSurface(imgSpongebob);
 
-    // Event loop
+    // Main loop
     bool quit = false;
-    SDL_Event e;
+    SDL_Event event;
 
     while (!quit) {
-        // Handle events
-        while (SDL_PollEvent(&e) != 0) {
-            if (e.type == SDL_QUIT) {
+        while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT) {
                 quit = true;
-            } else if (e.type == SDL_KEYDOWN) {
-                // Handle key presses for player movement
-                switch (e.key.keysym.sym) {
-                    case SDLK_UP:
-                        playerRect.y -= 10;
-                        break;
-                    case SDLK_DOWN:
-                        playerRect.y += 10;
-                        break;
-                    case SDLK_LEFT:
-                        playerRect.x -= 10;
-                        break;
-                    case SDLK_RIGHT:
-                        playerRect.x += 10;
-                        break;
-                }
             }
         }
 
-        // Clear the screen (black)
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        // Clear the renderer
         SDL_RenderClear(renderer);
 
-        // Render the player rectangle
-        SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
-        SDL_RenderFillRect(renderer, &playerRect);
+        // Render the textures
+        SDL_RenderCopy(renderer, texBikiniBottom, NULL, NULL);
+        SDL_RenderCopy(renderer, texSpongebob, NULL, NULL);
 
-        // Update the screen
+        // Present the renderer
         SDL_RenderPresent(renderer);
-
-        // Add a short delay to control the frame rate
-        SDL_Delay(16);
     }
 
     // Clean up
+    SDL_DestroyTexture(texBikiniBottom);
+    SDL_DestroyTexture(texSpongebob);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
+    IMG_Quit();
     SDL_Quit();
 
     return 0;
