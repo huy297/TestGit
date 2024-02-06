@@ -31,19 +31,11 @@ void quitSDL(SDL_Window* window, SDL_Renderer* renderer) {
 struct Tank {
     SDL_Rect Body;
     SDL_Rect Gun;
-<<<<<<< HEAD
     SDL_Surface* gunSurface;
     SDL_Texture* gunTexture;
     double GunRotation;
     Tank () {}
     Tank(SDL_Renderer* renderer, int bodyX, int bodyY, int bodyWidth, int bodyHeight) {
-        //
-            GunRotation = 0;
-=======
-    double gunRotation;
-    Tank () {}
-    Tank(int bodyX, int bodyY, int bodyWidth, int bodyHeight) {
->>>>>>> 5cff6701dc75f443748fba0006b0b50b2ff9e781
             // Set up the body
             Body.x = bodyX;
             Body.y = bodyY;
@@ -55,15 +47,11 @@ struct Tank {
             Gun.h = bodyHeight;     // Gun height is the same as the body height
             Gun.x = Body.x + Body.w/2 - Gun.w/2;
             Gun.y = Body.y + Body.h/2;
-<<<<<<< HEAD
             //
             gunSurface = SDL_CreateRGBSurface(0, Gun.w, Gun.h, 32, 0, 0, 0, 0);
             SDL_FillRect(gunSurface, nullptr, SDL_MapRGB(gunSurface->format, 0, 0, 255));
             gunTexture = SDL_CreateTextureFromSurface(renderer, gunSurface);
             SDL_FreeSurface(gunSurface);
-
-=======
->>>>>>> 5cff6701dc75f443748fba0006b0b50b2ff9e781
         }
     void draw(SDL_Window* window, SDL_Renderer* renderer) {
         SDL_SetRenderDrawColor(renderer,0,0,0,255);
@@ -71,14 +59,11 @@ struct Tank {
         SDL_SetRenderDrawColor(renderer,255,0,0,255);
         SDL_RenderFillRect(renderer, &Body);
         SDL_SetRenderDrawColor(renderer,0,255,0,255);
-<<<<<<< HEAD
                 // Render the gun texture at the updated angle
             SDL_Point gunCenter = {0, 0};
             SDL_RenderCopyEx(renderer, gunTexture, nullptr, &Gun, GunRotation * 180 / M_PI, &gunCenter, SDL_FLIP_NONE);
             SDL_RenderPresent(renderer);
-=======
         SDL_RenderFillRect(renderer, &Gun);
->>>>>>> 5cff6701dc75f443748fba0006b0b50b2ff9e781
     }
     void Move(int deltaX, int deltaY) {
         Body.x += deltaX;
@@ -86,7 +71,7 @@ struct Tank {
         Gun.x += deltaX;
         Gun.y += deltaY;
     }
-<<<<<<< HEAD
+
      void RotateGun(SDL_Renderer* renderer, int mouseX, int mouseY) {
           GunRotation = atan2(mouseY - (Gun.y + Gun.h / 2), mouseX - (Gun.x + Gun.w / 2));
         GunRotation -= M_PI / 2; // Adjust for SDL's coordinate system
@@ -96,23 +81,19 @@ struct Tank {
 bool isKeyPressed(const Uint8* state, SDL_Scancode key) {
     return state[key] == 1;
 }
-=======
+
      void RotateGun(int mouseX, int mouseY) {
         // Calculate the angle between the gun's center and the mouse position
         gunRotation = atan2(static_cast<double>(mouseY - (Gun.y + Gun.h / 2)),
                             static_cast<double>(mouseX - (Gun.x + Gun.w / 2)));
     }
 }MyTank;
->>>>>>> 5cff6701dc75f443748fba0006b0b50b2ff9e781
 int main(int argc, char* argv[]) {
    SDL_Window* window = initSDL(SCREEN_WIDTH,SCREEN_HEIGHT,WINDOW_TITLE);
     SDL_Renderer* renderer = createRenderer(window);
     SDL_Event e;
-<<<<<<< HEAD
     MyTank = Tank(renderer,0,0,40,50);
-=======
     MyTank = Tank(0,0,100,100);
->>>>>>> 5cff6701dc75f443748fba0006b0b50b2ff9e781
     SDL_Event event;
     bool quit = false;
 
@@ -121,7 +102,6 @@ int main(int argc, char* argv[]) {
             if (event.type == SDL_QUIT) {
                 quit = true;
             }
-<<<<<<< HEAD
             else if (event.type == SDL_MOUSEMOTION) {
                 // Update gun rotation based on mouse movement
                 MyTank.RotateGun(renderer, event.motion.x, event.motion.y);
@@ -143,7 +123,6 @@ int main(int argc, char* argv[]) {
         }
         if (isKeyPressed(currentKeyStates, SDL_SCANCODE_D)) {
             deltaX += 5;
-=======
             else if (event.type == SDL_KEYDOWN) {
                  // Handle key events for moving the rectangle
                 switch (event.key.keysym.sym) {
@@ -165,7 +144,6 @@ int main(int argc, char* argv[]) {
                 // Update gun rotation based on mouse movement
                 MyTank.RotateGun(event.motion.x, event.motion.y);
             }
->>>>>>> 5cff6701dc75f443748fba0006b0b50b2ff9e781
         }
 
         MyTank.Move(deltaX, deltaY);
@@ -173,14 +151,11 @@ int main(int argc, char* argv[]) {
         // Clear the renderer
          SDL_SetRenderDrawColor(renderer,0,255,0,255);
         SDL_RenderClear(renderer);
-<<<<<<< HEAD
          MyTank.draw(window,renderer);
         SDL_RenderPresent(renderer);
         SDL_Delay(20);
-=======
      MyTank.draw(window,renderer);
     SDL_RenderPresent(renderer);
->>>>>>> 5cff6701dc75f443748fba0006b0b50b2ff9e781
     }
     return 0;
 }
